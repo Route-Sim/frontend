@@ -315,37 +315,41 @@ export function MapCreator({
         {/* Left column: scrollable configuration */}
         <div className="flex w-120 shrink-0 flex-col">
           {/* Action buttons */}
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setParams({ ...DEFAULTS })}
-            >
-              Reset
-            </Button>
-            <Button variant="outline" size="sm" onClick={applyPresetDenseUrban}>
-              Dense Urban
-            </Button>
-            <Button variant="outline" size="sm" onClick={applyPresetSparseRural}>
-              Sparse Rural
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleImportClick}
-              disabled={!canCreate || importing}
-              aria-busy={importing}
-            >
-              {importing ? 'Importing...' : 'Import Map'}
-            </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".smap"
-              onChange={handleFileChange}
-              className="hidden"
-              aria-label="Import map file"
-            />
+          <div className="mb-3 flex items-center gap-2 justify-between pr-3">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setParams({ ...DEFAULTS })}
+              >
+                Reset
+              </Button>
+              <Button variant="outline" size="sm" onClick={applyPresetDenseUrban}>
+                Dense Urban
+              </Button>
+              <Button variant="outline" size="sm" onClick={applyPresetSparseRural}>
+                Sparse Rural
+              </Button>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleImportClick}
+                disabled={!canCreate || importing}
+                aria-busy={importing}
+              >
+                {importing ? 'Importing...' : 'Import Map'}
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".smap"
+                onChange={handleFileChange}
+                className="hidden"
+                aria-label="Import map file"
+              />
+            </div>
           </div>
 
           {/* Scrollable sections */}

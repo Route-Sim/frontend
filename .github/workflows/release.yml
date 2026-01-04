@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release PR or Publish Release
+        uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          # The release type determines how version bumping and changelog work
+          release-type: node
+          # Package name for the release
+          package-name: route-sim-frontend
+          # Bump minor version for feat commits, patch for fix commits
+          bump-minor-pre-major: true
+          bump-patch-for-minor-pre-major: true
+
+      # Optional: Publish to npm if a release was created
+      # Uncomment if you want to publish to npm registry
+      # - name: Checkout
+      #   if: ${{ steps.release.outputs.release_created }}
+      #   uses: actions/checkout@v4
+      #
+      # - name: Setup Bun
+      #   if: ${{ steps.release.outputs.release_created }}
+      #   uses: oven-sh/setup-bun@v1
+      #
+      # - name: Install dependencies
+      #   if: ${{ steps.release.outputs.release_created }}
+      #   run: bun install
+      #
+      # - name: Publish to npm
+      #   if: ${{ steps.release.outputs.release_created }}
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #   run: bun publish --access public
+
+      # Optional: Build and deploy on release
+      - name: Checkout
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        if: ${{ steps.release.outputs.release_created }}
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        if: ${{ steps.release.outputs.release_created }}
+        run: bun install
+
+      - name: Build
+        if: ${{ steps.release.outputs.release_created }}
+        run: bun run build
+
+      # Add deployment steps here if needed
+

@@ -39,3 +39,8 @@ links:
 - Simulation Time: Virtual world clock comprising a day (1-indexed integer) and time (24h float, e.g., 12.5 = 12:30). Updated each tick via `tick.start` and `tick.end` signals.
 - Simulation Day: Current day in the virtual simulation world, starting from day 1.
 - Simulation Clock: HUD component displaying the current simulation day and formatted time (HH:MM) at the top-center of the screen.
+- Conventional Commits: Standardized commit message format (`type(scope): description`) enabling automated changelog generation and semantic versioning.
+- Semantic Versioning (SemVer): Version numbering scheme (MAJOR.MINOR.PATCH) where major = breaking changes, minor = features, patch = fixes.
+- Release-Please: Automated release management tool that analyzes commit messages, determines version bumps, generates changelogs, and creates release PRs.
+- Commitlint: Linter that validates commit messages against conventional commit rules, ensuring consistency and enabling automation.
+- Breaking Change: API or behavior modification requiring consumer code updates; triggers major version bump when committed with `BREAKING CHANGE:` footer or `!` suffix.

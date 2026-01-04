@@ -167,6 +167,59 @@ renderer.setClearColor(0xf2f2f2, 1);
 
 ---
 
+## 🤝 Contributing
+
+This project uses **Conventional Commits** and automated semantic versioning.
+
+### Commit Message Format
+
+All commits must follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+**Common types:**
+- `feat:` new feature (triggers minor version bump)
+- `fix:` bug fix (triggers patch version bump)
+- `docs:` documentation changes
+- `refactor:` code refactoring
+- `test:` test additions or updates
+- `chore:` maintenance tasks
+
+**Examples:**
+
+```bash
+feat(hud): add agent inspector panel
+fix(engine): correct camera aspect ratio on resize
+docs: update installation instructions
+```
+
+**Breaking changes** (trigger major version bump):
+
+```bash
+feat(sim)!: redesign state management
+
+BREAKING CHANGE: SimStore API has been completely redesigned.
+```
+
+### Automated Releases
+
+- PRs are validated for conventional commit format
+- Merging to `main` automatically creates a Release PR with:
+  - Version bump (based on commit types)
+  - Generated changelog
+  - Updated `package.json`
+- Merging the Release PR creates a GitHub release
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+---
+
 ## 🧪 Build & preview
 
 ```bash

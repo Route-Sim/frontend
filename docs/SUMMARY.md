@@ -32,6 +32,7 @@
     - [docker](modules/config/docker.md)
     - [docker-compose](modules/config/docker-compose.md)
     - [vite](modules/config/vite.md)
+    - [github-actions](modules/config/github-actions.md)
 
   - net
     - [index](modules/net/index.md)

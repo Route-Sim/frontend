@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Map, Truck, Handshake, Play } from 'lucide-react';
+import { Map, Truck, Handshake, Play, Upload } from 'lucide-react';
 import {
   HudVisibilityProvider,
   useHudVisibility,
@@ -10,7 +10,7 @@ import {
   usePlaybackState,
 } from './state/playback-state';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
-import { PlayControls } from './containers/play-controls';
+import { SimulationControls } from './containers/simulation-controls';
 import { CameraHelp } from './containers/camera-help';
 import { HudMenu } from './components/hud-menu';
 import { usePlaybackNetController } from './hooks/use-playback-controller';
@@ -19,6 +19,7 @@ import { NetEventsPanel } from './containers/net-events';
 import { MapCreator } from './containers/map-creator';
 import { FleetCreator } from './containers/fleet-creator';
 import { BrokerSetup } from './containers/broker-setup';
+import { StateImporter } from './containers/state-importer';
 import { StartSimulation } from './containers/start-simulation';
 import { FocusInspector } from './containers/focus-inspector';
 import { ObjectPicker } from './containers/object-picker';
@@ -72,7 +73,7 @@ function PlaybackVisibilityManager() {
   // Show them when simulation is playing or paused
   React.useEffect(() => {
     const isSimulationActive = status === 'playing' || status === 'paused';
-    setVisible('play-controls', isSimulationActive);
+    setVisible('simulation-controls', isSimulationActive);
     setVisible('camera-help', isSimulationActive);
     setVisible('net-events', isSimulationActive);
   }, [status, setVisible]);
@@ -99,7 +100,7 @@ function SimulationPanels({
       </div>
 
       <div className="fixed top-4 bottom-4 left-4 flex flex-col gap-4">
-        {isVisible('play-controls') && <PlayControls controller={controller} />}
+        {isVisible('simulation-controls') && <SimulationControls controller={controller} />}
         {isVisible('camera-help') && <CameraHelp />}
         {isVisible('net-events') && (
           <div className="flex-1 min-h-0">
@@ -153,6 +154,10 @@ function CreatorPanels({
             <Handshake className="h-4 w-4" />
             Broker
           </TabsTrigger>
+          <TabsTrigger value="load" className="gap-1.5">
+            <Upload className="h-4 w-4" />
+            Load State
+          </TabsTrigger>
           <TabsTrigger value="simulation" className="gap-1.5">
             <Play className="h-4 w-4" />
             Simulation
@@ -179,6 +184,13 @@ function CreatorPanels({
           className="mt-4 min-h-0 flex-1 data-[state=inactive]:hidden"
         >
           <BrokerSetup className="h-full" />
+        </TabsContent>
+        <TabsContent
+          value="load"
+          forceMount
+          className="mt-4 min-h-0 flex-1 data-[state=inactive]:hidden"
+        >
+          <StateImporter className="h-full" />
         </TabsContent>
         <TabsContent
           value="simulation"

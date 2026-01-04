@@ -69,7 +69,7 @@
   - hud
     - [index](modules/hud/index.md)
     - containers
-      - [play-controls](modules/hud/containers/play-controls.md)
+      - [simulation-controls](modules/hud/containers/simulation-controls.md)
       - [simulation-clock](modules/hud/containers/simulation-clock.md)
       - [camera-help](modules/hud/containers/camera-help.md)
       - [net-events](modules/hud/containers/net-events.md)

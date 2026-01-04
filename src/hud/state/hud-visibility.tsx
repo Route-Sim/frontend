@@ -5,7 +5,8 @@ export type HudPanelId =
   | 'map-creator'
   | 'fleet-creator'
   | 'broker-setup'
-  | 'play-controls'
+  | 'state-importer'
+  | 'simulation-controls'
   | 'camera-help'
   | 'net-events';
 
@@ -14,7 +15,7 @@ export type HudVisibilityState = Record<HudPanelId, boolean>;
 const HUD_VISIBILITY_STORAGE_KEY = 'hud:panels:v1';
 
 export const HUD_PANELS: HudPanelId[] = [
-  'play-controls',
+  'simulation-controls',
   'camera-help',
   'net-events',
 ];
@@ -24,7 +25,8 @@ const defaultVisibility: HudVisibilityState = {
   'map-creator': true,
   'fleet-creator': true,
   'broker-setup': true,
-  'play-controls': true,
+  'state-importer': true,
+  'simulation-controls': true,
   'camera-help': true,
   'net-events': false,
 };

@@ -14,7 +14,7 @@ import type { HudPanelId } from '@/hud/state/hud-visibility';
 
 const LABELS: Record<(typeof HUD_PANELS)[number], string> = {
   'broker-setup': 'Broker Setup',
-  'play-controls': 'Play Controls',
+  'simulation-controls': 'Simulation Controls',
   'camera-help': 'Camera Help',
   'net-events': 'Net Events',
   'map-creator': 'Map Creator',

@@ -92,6 +92,13 @@ export const ActionSchemas = {
     file_content: z.string().min(1),
     filename: z.string().min(1),
   }),
+  'simulation.export_state': z.object({
+    filename: z.string().min(1),
+  }),
+  'simulation.import_state': z.object({
+    file_content: z.string().min(1),
+    filename: z.string().min(1),
+  }),
 } as const;
 
 export type ActionName = keyof typeof ActionSchemas;
@@ -432,6 +439,13 @@ export const SignalSchemas = {
     file_content: z.string(),
   }),
   'map.imported': z.object({
+    filename: z.string(),
+  }),
+  'simulation.state_exported': z.object({
+    filename: z.string(),
+    file_content: z.string(),
+  }),
+  'simulation.state_imported': z.object({
     filename: z.string(),
   }),
   error: z.object({ code: z.string(), message: z.string() }),

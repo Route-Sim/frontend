@@ -2,8 +2,11 @@ import * as React from 'react';
 import { Pause, Play, Square } from 'lucide-react';
 import { HudContainer } from '@/hud/components/hud-container';
 import { Button } from '@/hud/ui/button';
+import { Input } from '@/hud/ui/input';
+import { Label } from '@/hud/ui/label';
 import { Slider } from '@/hud/ui/slider';
 import { usePlaybackState } from '@/hud/state/playback-state';
+import { net } from '@/net';
 import type {
   PlaybackCommand,
   PlaybackController,
@@ -45,13 +48,13 @@ function persistSpeed(speed: number): void {
   } catch {}
 }
 
-type PlayControlsProps = {
+type SimulationControlsProps = {
   controller?: PlaybackController;
 };
 
-export function PlayControls({
+export function SimulationControls({
   controller,
-}: PlayControlsProps): React.ReactNode {
+}: SimulationControlsProps): React.ReactNode {
   const { status: globalStatus, setStatus: setGlobalStatus } =
     usePlaybackState();
 
@@ -66,6 +69,8 @@ export function PlayControls({
   const [dragTickRate, setDragTickRate] = React.useState<number | null>(null);
   const [speed, setSpeed] = React.useState<number>(initial.speed);
   const [dragSpeed, setDragSpeed] = React.useState<number | null>(null);
+  const [exporting, setExporting] = React.useState<boolean>(false);
+  const [exportFilename, setExportFilename] = React.useState<string>('save_0');
   const sink = controller?.commandSink;
 
   // Sync local status with global playback state
@@ -121,14 +126,40 @@ export function PlayControls({
     [sink],
   );
 
+  const handleExport = React.useCallback(async (): Promise<void> => {
+    if (status !== 'paused' || exporting || !exportFilename.trim()) return;
+    setExporting(true);
+    try {
+      const response = await net.sendAction('simulation.export_state', {
+        filename: exportFilename.trim(),
+      });
+      if (response.signal !== 'simulation.state_exported') return;
+      // Decode base64 and trigger download
+      const blob = new Blob(
+        [Uint8Array.from(atob(response.data.file_content), c => c.charCodeAt(0))],
+        { type: 'application/octet-stream' }
+      );
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = response.data.filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // future: surface via HUD toast
+    } finally {
+      setExporting(false);
+    }
+  }, [status, exporting, exportFilename]);
+
   const displayTickRate = dragTickRate ?? tickRate;
   const displaySpeed = dragSpeed ?? speed;
 
   return (
     <HudContainer
-      id="play-controls"
-      title="Play Controls"
-      description="Control the playback of the simulation."
+      id="simulation-controls"
+      title="Simulation Controls"
+      description="Control the playback of the simulation and export save states."
       className="w-96"
     >
       <div className="flex flex-col gap-4 py-4">
@@ -178,7 +209,32 @@ export function PlayControls({
           />
         </div>
 
-        <div className="flex flex-col gap-2 self-end">
+        {/* Export section - only visible when paused */}
+        <div className="flex flex-row gap-2 items-end border-t border-black/10 pt-4">
+          <div className="space-y-1.5 flex-1">
+            <Label htmlFor="export_filename" className="text-xs text-black/70 ml-1">
+              Save Filename
+            </Label>
+            <Input
+              id="export_filename"
+              type="text"
+              value={exportFilename}
+              onChange={(e) => setExportFilename(e.target.value)}
+              placeholder="save_0"
+              disabled={exporting}
+            />
+          </div>
+          <Button
+            variant="secondary"
+            onClick={handleExport}
+            disabled={exporting || !exportFilename.trim() || status !== 'paused'}
+            aria-busy={exporting}
+          >
+            {exporting ? 'Exporting...' : 'Export State'}
+          </Button>
+        </div>
+
+        <div className="flex flex-col gap-2 self-end border-t border-black/10 pt-4 w-full">
           {(status === 'playing' || status === 'paused') && (
             <div className="flex items-center gap-2">
               {status === 'playing' ? (

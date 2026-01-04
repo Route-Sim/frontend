@@ -6,6 +6,8 @@ export const ActionToSignal = {
   'simulation.resume': 'simulation.resumed',
   'simulation.pause': 'simulation.paused',
   'simulation.update': 'simulation.updated',
+  'simulation.export_state': 'simulation.state_exported',
+  'simulation.import_state': 'simulation.state_imported',
   'map.create': 'map.created',
   'map.export': 'map.exported',
   'map.import': 'map.imported',

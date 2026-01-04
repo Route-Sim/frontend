@@ -31,10 +31,12 @@ type ActionName =
   | 'simulation.stop'
   | 'simulation.resume'
   | 'simulation.pause'
+  | 'simulation.update'
+  | 'simulation.export_state'
+  | 'simulation.import_state'
   | 'map.create'
   | 'map.export'
   | 'map.import'
-  | 'tick_rate.update'
   | 'agent.create'
   | 'agent.update'
   | 'agent.delete'
@@ -94,6 +96,8 @@ type SignalName =
   | 'simulation.resumed'
   | 'simulation.paused'
   | 'simulation.updated'
+  | 'simulation.state_exported'
+  | 'simulation.state_imported'
   | 'tick.start'
   | 'tick.end'
   | 'map.created'
@@ -239,6 +243,102 @@ Example usage in the Map Creator HUD:
 7. Server responds with `map.imported` signal
 8. Server emits `map.created` signal with the loaded map data
 9. Client updates form parameters and graph preview via existing `map.created` handler
+
+### EXPORT_SIMULATION_STATE – Save Current Simulation State
+
+Action type: `simulation.export_state`
+
+**Availability**: Only when simulation is paused
+
+Parameters:
+
+```json
+{
+  "action": "simulation.export_state",
+  "params": {
+    "filename": "save1"
+  }
+}
+```
+
+Response signal: `simulation.state_exported`
+
+```json
+{
+  "signal": "simulation.state_exported",
+  "data": {
+    "filename": "save1.ssave",
+    "file_content": "ewogICJncmF..."
+  }
+}
+```
+
+The `file_content` field contains the base64-encoded serialized simulation state, including all agents, packages, tick count, time, and other runtime state. The server appends the `.ssave` extension to the filename if not already present.
+
+**Use cases**:
+- Save progress at specific simulation milestones
+- Create checkpoints before testing risky scenarios
+- Share interesting simulation states with others
+- Debug by capturing state at error points
+
+Example usage in Simulation Controls:
+1. User pauses simulation
+2. Export section becomes visible with filename input
+3. User edits filename (e.g., "checkpoint_day5")
+4. User clicks "Export State"
+5. Client sends `simulation.export_state` action
+6. Server serializes entire simulation state
+7. Server responds with base64-encoded content
+8. Client decodes, creates Blob, triggers download of `.ssave` file
+9. Object URL cleaned up immediately
+
+### IMPORT_SIMULATION_STATE – Load Previously Saved State
+
+Action type: `simulation.import_state`
+
+**Availability**: When simulation is idle, stopped, or paused
+
+Parameters:
+
+```json
+{
+  "action": "simulation.import_state",
+  "params": {
+    "file_content": "ewogICJncm...",
+    "filename": "save1.ssave"
+  }
+}
+```
+
+Response signal: `simulation.state_imported`
+
+```json
+{
+  "signal": "simulation.state_imported",
+  "data": {
+    "filename": "save1.ssave"
+  }
+}
+```
+
+The `file_content` field must contain the base64-encoded simulation state file data. After successfully importing, the simulation state is fully restored to the saved point, including all agents, packages, tick count, and time.
+
+**Use cases**:
+- Resume from a previous checkpoint
+- Load shared simulation scenarios
+- Replay interesting situations
+- Test different strategies from the same starting point
+
+Example usage in Simulation Controls:
+1. User clicks "Import State" (available when idle/stopped/paused)
+2. Native file picker opens, filtered to `.ssave` files
+3. User selects a save file
+4. Client reads file as ArrayBuffer, converts to base64
+5. Client sends `simulation.import_state` action
+6. Server deserializes and validates the state
+7. Server restores simulation to saved state
+8. Server responds with `simulation.state_imported` signal
+9. Simulation can be resumed from loaded state
 
 ### CREATE_MAP – Generate New Map Procedurally
 

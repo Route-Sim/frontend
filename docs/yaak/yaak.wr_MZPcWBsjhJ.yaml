@@ -1,0 +1,22 @@
+type: websocket_request
+model: websocket_request
+id: wr_MZPcWBsjhJ
+createdAt: 2026-01-04T08:26:16.222947
+updatedAt: 2026-01-04T08:39:59.721287
+workspaceId: wk_BJkwK7RGqy
+folderId: fl_V57ekqotsu
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+message: |-
+  {
+    "action": "map.export",
+    "params": {
+      "filename": "my_map"
+    }
+  }
+name: Export
+sortPriority: 1000.0
+url: ${[ WEBSOCKET_URL ]}
+urlParameters: []

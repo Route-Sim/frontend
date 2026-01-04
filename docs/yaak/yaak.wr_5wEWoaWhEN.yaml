@@ -1,0 +1,23 @@
+type: websocket_request
+model: websocket_request
+id: wr_5wEWoaWhEN
+createdAt: 2026-01-04T08:39:40.847049
+updatedAt: 2026-01-04T08:49:30.612251
+workspaceId: wk_BJkwK7RGqy
+folderId: fl_V57ekqotsu
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+message: |-
+  {
+    "action": "map.import",
+    "params": {
+      "file_content": "ewogICJub2Rlcy...",
+      "filename": "my_map.smap"
+    }
+  }
+name: Import
+sortPriority: 2000.0
+url: ${[ WEBSOCKET_URL ]}
+urlParameters: []

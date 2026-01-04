@@ -85,6 +85,13 @@ export const ActionSchemas = {
   'agent.delete': z.object({ agent_id: z.string() }),
   'agent.list': z.object({}),
   'agent.describe': z.object({ agent_id: z.string() }),
+  'map.export': z.object({
+    filename: z.string().min(1),
+  }),
+  'map.import': z.object({
+    file_content: z.string().min(1),
+    filename: z.string().min(1),
+  }),
 } as const;
 
 export type ActionName = keyof typeof ActionSchemas;
@@ -420,6 +427,13 @@ export const SignalSchemas = {
     })
     .catchall(z.unknown()),
   'package.created': PackageCreatedData,
+  'map.exported': z.object({
+    filename: z.string(),
+    file_content: z.string(),
+  }),
+  'map.imported': z.object({
+    filename: z.string(),
+  }),
   error: z.object({ code: z.string(), message: z.string() }),
 } as const;
 

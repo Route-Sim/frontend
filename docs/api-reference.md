@@ -4,7 +4,7 @@ summary: 'Typed actions and signals exchanged between VISTA and SPINE with zod-v
 source_paths:
   - 'src/net/protocol/schema.ts'
   - 'src/net/protocol/mapping.ts'
-last_updated: '2025-12-14'
+last_updated: '2026-01-04'
 owner: 'Mateusz Nędzi'
 tags: ['api', 'net', 'protocol']
 links:
@@ -66,8 +66,8 @@ map.create: {
   rural_settlement_prob: number (0..1),
   seed: integer
 }
-map.export: { map_name: string }
-map.import: { base64_file: string }
+map.export: { filename: string }
+map.import: { file_content: string, filename: string }
 tick_rate.update: { tick_rate: number }
 agent.create: { agent_id: string, agent_kind: string, ... }
 agent.update: { agent_id: string, ... }
@@ -97,6 +97,8 @@ type SignalName =
   | 'tick.start'
   | 'tick.end'
   | 'map.created'
+  | 'map.exported'
+  | 'map.imported'
   | 'agent.created'
   | 'agent.updated'
   | 'agent.deleted'
@@ -137,8 +139,8 @@ map.created: {
     }[];
   };
 }
-map.exported: { filename: string, base64_file: string }
-map.imported: {}
+map.exported: { filename: string, file_content: string }
+map.imported: { filename: string }
 tick_rate.updated: { tick_rate: number }
 agent.created: AgentCreatedPayload // see detailed breakdown below
 agent.updated: { agent_id: string, ... }
@@ -160,6 +162,83 @@ Examples:
 { "signal": "tick.start", "data": { "tick": 32, "time": 14.5, "day": 1 } }
 { "signal": "tick.end",   "data": { "tick": 32, "time": 14.5, "day": 1 } }
 ```
+
+### EXPORT_MAP – Export Generated Map
+
+Action type: `map.export`
+
+Parameters:
+
+```json
+{
+  "action": "map.export",
+  "params": {
+    "filename": "my_map"
+  }
+}
+```
+
+Response signal: `map.exported`
+
+```json
+{
+  "signal": "map.exported",
+  "data": {
+    "filename": "my_map.smap",
+    "file_content": "ewogICJub2..."
+  }
+}
+```
+
+The `file_content` field contains the base64-encoded serialized map data. The client should decode this base64 string and trigger a browser download. The server appends the `.smap` extension to the filename if not already present.
+
+Example usage in the Map Creator HUD:
+1. User specifies filename in input field (or uses auto-populated default)
+2. User clicks "Export Map" button
+3. Client sends `map.export` action with user-provided filename
+4. Server serializes the current map and responds with base64-encoded content
+5. Client decodes base64, creates a Blob, and triggers download via temporary object URL
+6. Object URL is cleaned up immediately to prevent memory leaks
+
+### IMPORT_MAP – Import Previously Exported Map
+
+Action type: `map.import`
+
+Parameters:
+
+```json
+{
+  "action": "map.import",
+  "params": {
+    "file_content": "ewogICJub2Rlcy...",
+    "filename": "my_map.smap"
+  }
+}
+```
+
+Response signal: `map.imported`
+
+```json
+{
+  "signal": "map.imported",
+  "data": {
+    "filename": "my_map.smap"
+  }
+}
+```
+
+The `file_content` field must contain the base64-encoded map file data. After successfully importing, the server will emit a `map.created` signal with the full map data, allowing the client to update its state and preview as if a new map was generated.
+
+Example usage in the Map Creator HUD:
+1. User clicks "Import Map" button
+2. Native file picker opens, filtered to `.smap` files
+3. User selects a file
+4. Client reads file as ArrayBuffer, converts to base64
+5. Client sends `map.import` action with base64 content and filename
+6. Server deserializes and validates the map
+7. Server responds with `map.imported` signal
+8. Server emits `map.created` signal with the loaded map data
+9. Client updates form parameters and graph preview via existing `map.created` handler
 
 ### CREATE_MAP – Generate New Map Procedurally
 

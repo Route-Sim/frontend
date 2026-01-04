@@ -1,0 +1,16 @@
+type: websocket_request
+model: websocket_request
+id: wr_AGBAqFkzjo
+createdAt: 2026-01-04T09:01:00.309804
+updatedAt: 2026-01-04T09:01:06.970386
+workspaceId: wk_BJkwK7RGqy
+folderId: null
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+message: ''
+name: Connect
+sortPriority: 333.3333333333333
+url: ${[ WEBSOCKET_URL ]}
+urlParameters: []

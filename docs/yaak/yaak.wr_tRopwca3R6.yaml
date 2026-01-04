@@ -1,0 +1,22 @@
+type: websocket_request
+model: websocket_request
+id: wr_tRopwca3R6
+createdAt: 2026-01-04T08:41:50.242226
+updatedAt: 2026-01-04T08:42:02.607527
+workspaceId: wk_BJkwK7RGqy
+folderId: fl_x65ys46iyJ
+authentication: {}
+authenticationType: null
+description: ''
+headers: []
+message: |-
+  {
+    "action": "simulation.export_state",
+    "params": {
+      "filename": "save1"
+    }
+  }
+name: Export State
+sortPriority: 3000.001
+url: ${[ WEBSOCKET_URL ]}
+urlParameters: []

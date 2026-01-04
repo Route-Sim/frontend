@@ -3,7 +3,7 @@ title: 'Map Creator'
 summary: 'Full-screen container for map creation and editing. Displayed when simulation is idle, hidden when simulation starts.'
 source_paths:
   - 'src/hud/containers/map-creator.tsx'
-last_updated: '2025-12-09'
+last_updated: '2026-01-04'
 owner: 'Mateusz Nędzi'
 tags: ['module', 'hud', 'react', 'ui', 'container']
 links:
@@ -24,7 +24,7 @@ The Map Creator panel provides a dedicated workspace for users to create and con
 
 ## Responsibilities & Boundaries
 
-- In-scope: Parameter form (dimensions, structure, densities, connectivity, road composition, seed), presets, and the Create Map action.
+- In-scope: Parameter form (dimensions, structure, densities, connectivity, road composition, seed), presets, the Create Map action, map export functionality, and map import functionality.
 - Out-of-scope: Procedural generation logic (server-side), three.js scene mutation (handled by view/engine).
 
 ## Architecture & Design
@@ -71,6 +71,29 @@ import { MapCreator } from '@/hud/containers/map-creator';
 - Graph preview colors follow the warm palette; stroke width reflects `road_class` tier and `lanes`.
 - The preview overlays counts (`generated_nodes`, `generated_edges`, `generated_sites`) for quick verification.
 - `map.created` events may omit newer fields (e.g., gas station ranges); the container defensively merges incoming data with the last known params/defaults so the form and graph stay render-safe during schema evolution.
+
+### Export Functionality
+
+- Export section appears below the Create Map button and is only visible when a map has been created.
+- User can specify a custom filename via an input field (auto-populated as `map_${width}x${height}_${seed}` when map is created).
+- Sends `net.sendAction('map.export', { filename })` with the user-provided filename.
+- Server responds with `map.exported` signal containing base64-encoded file content.
+- Client decodes base64, creates a Blob, and triggers browser download of the `.smap` file.
+- Object URL is cleaned up immediately after download to prevent memory leaks.
+- Export state (`exporting`) prevents double-clicks during the export/download process.
+- Export button is disabled if filename is empty or only whitespace.
+
+### Import Functionality
+
+- Import button appears in the top action bar alongside Reset and preset buttons.
+- Disabled when simulation is not `idle`/`stopped`, matching the Create Map button behavior.
+- Clicking Import opens a native file picker filtered to `.smap` files.
+- User selects a `.smap` file, which is read as an ArrayBuffer and converted to base64.
+- Sends `net.sendAction('map.import', { file_content, filename })` with base64-encoded content and original filename.
+- Server responds with `map.imported` signal, then emits `map.created` with the loaded map data.
+- The `map.created` handler updates the form parameters and graph preview, just as with a newly generated map.
+- Import state (`importing`) prevents multiple simultaneous imports.
+- File input is reset after successful import to allow re-importing the same file.
 
 ## References
 

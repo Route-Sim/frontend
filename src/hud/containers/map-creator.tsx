@@ -129,7 +129,11 @@ export function MapCreator({
   const { status } = usePlaybackState();
   const [params, setParams] = React.useState<MapCreateParams>({ ...DEFAULTS });
   const [sending, setSending] = React.useState<boolean>(false);
+  const [exporting, setExporting] = React.useState<boolean>(false);
+  const [importing, setImporting] = React.useState<boolean>(false);
+  const [exportFilename, setExportFilename] = React.useState<string>('map_1000x1000_42');
   const [mapData, setMapData] = React.useState<MapCreatedData | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const canCreate = status === 'idle' || status === 'stopped';
 
@@ -137,6 +141,7 @@ export function MapCreator({
   React.useEffect(() => {
     const handleMapCreated = (data: MapCreatedData): void => {
       setMapData(data);
+      setExportFilename(`map_${data.map_width}x${data.map_height}_${data.seed}`);
       setParams((prev) => {
         const fallback = { ...DEFAULTS, ...prev };
         return {
@@ -228,6 +233,69 @@ export function MapCreator({
     }
   };
 
+  const handleExport = async (): Promise<void> => {
+    if (!mapData || exporting || !exportFilename.trim()) return;
+    setExporting(true);
+    try {
+      const response = await net.sendAction('map.export', {
+        filename: exportFilename.trim(),
+      });
+      if (response.signal !== 'map.exported') return;
+      // Decode base64 and trigger download
+      const blob = new Blob(
+        [Uint8Array.from(atob(response.data.file_content), c => c.charCodeAt(0))],
+        { type: 'application/octet-stream' }
+      );
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = response.data.filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // future: surface via HUD toast
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleImportClick = (): void => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    const file = event.target.files?.[0];
+    if (!file || importing) return;
+
+    setImporting(true);
+    try {
+      // Read file as ArrayBuffer
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      // Convert to base64
+      const base64 = btoa(String.fromCharCode(...uint8Array));
+
+      const response = await net.sendAction('map.import', {
+        file_content: base64,
+        filename: file.name,
+      });
+
+      if (response.signal === 'map.imported') {
+        // Map will be loaded via map.created signal
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
+    } catch {
+      // future: surface via HUD toast
+    } finally {
+      setImporting(false);
+    }
+  };
+
   return (
     <HudContainer
       id="map-creator"
@@ -254,6 +322,23 @@ export function MapCreator({
             <Button variant="outline" size="sm" onClick={applyPresetSparseRural}>
               Sparse Rural
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleImportClick}
+              disabled={!canCreate || importing}
+              aria-busy={importing}
+            >
+              {importing ? 'Importing...' : 'Import Map'}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".smap"
+              onChange={handleFileChange}
+              className="hidden"
+              aria-label="Import map file"
+            />
           </div>
 
           {/* Scrollable sections */}
@@ -724,8 +809,31 @@ export function MapCreator({
               disabled={!canCreate || sending}
               aria-busy={sending}
             >
-              {sending ? 'Creating...' : 'Create Map'}
+              {sending ? 'Generating...' : 'Generate Map'}
             </Button>
+            {mapData && (
+              <div className="mt-3 space-y-2">
+                <Field label="Export Filename" htmlFor="export_filename">
+                  <Input
+                    id="export_filename"
+                    type="text"
+                    value={exportFilename}
+                    onChange={(e) => setExportFilename(e.target.value)}
+                    placeholder="map_42"
+                    disabled={exporting}
+                  />
+                </Field>
+                <Button
+                  variant="secondary"
+                  className="w-full"
+                  onClick={handleExport}
+                  disabled={!mapData || exporting || !exportFilename.trim()}
+                  aria-busy={exporting}
+                >
+                  {exporting ? 'Exporting...' : 'Export Map'}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 

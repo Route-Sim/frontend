@@ -46,21 +46,21 @@ jobs:
       #   run: bun publish --access public
 
       # Optional: Build and deploy on release
-      - name: Checkout
-        if: ${{ steps.release.outputs.release_created }}
-        uses: actions/checkout@v4
+      # - name: Checkout
+      #   if: ${{ steps.release.outputs.release_created }}
+      #   uses: actions/checkout@v4
 
-      - name: Setup Bun
-        if: ${{ steps.release.outputs.release_created }}
-        uses: oven-sh/setup-bun@v1
+      # - name: Setup Bun
+      #   if: ${{ steps.release.outputs.release_created }}
+      #   uses: oven-sh/setup-bun@v1
 
-      - name: Install dependencies
-        if: ${{ steps.release.outputs.release_created }}
-        run: bun install
+      # - name: Install dependencies
+      #   if: ${{ steps.release.outputs.release_created }}
+      #   run: bun install
 
-      - name: Build
-        if: ${{ steps.release.outputs.release_created }}
-        run: bun run build
+      # - name: Build
+      #   if: ${{ steps.release.outputs.release_created }}
+      #   run: bun run build
 
       # Add deployment steps here if needed
 

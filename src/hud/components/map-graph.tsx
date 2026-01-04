@@ -186,7 +186,8 @@ export function MapGraph({ data, className }: MapGraphProps): React.ReactNode {
       <div className="pointer-events-none absolute top-2 left-2 rounded bg-white/70 px-2 py-1 text-[10px] text-black/70 shadow">
         <span className="tabular-nums">
           {data.generated_nodes} nodes · {data.generated_edges} edges ·{' '}
-          {data.generated_sites} sites · {data.generated_parkings} parkings
+          {data.generated_sites} sites · {data.generated_parkings} parkings ·{' '}
+          {data.generated_gas_stations} gas stations
         </span>
       </div>
 

@@ -411,6 +411,7 @@ export const SignalSchemas = {
       generated_edges: z.number().int().min(0),
       generated_sites: z.number().int().min(0),
       generated_parkings: z.number().int().min(0),
+      generated_gas_stations: z.number().int().min(0),
       graph: z.object({
         nodes: z.array(GraphNode),
         edges: z.array(GraphEdge),

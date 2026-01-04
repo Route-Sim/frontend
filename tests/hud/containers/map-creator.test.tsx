@@ -244,6 +244,7 @@ describe('MapCreator', () => {
       generated_edges: 150,
       generated_sites: 10,
       generated_parkings: 5,
+      generated_gas_stations: 2,
       graph: {
         nodes: [],
         edges: [],
@@ -295,6 +296,7 @@ describe('MapCreator', () => {
       generated_edges: 300,
       generated_sites: 20,
       generated_parkings: 10,
+      generated_gas_stations: 2,
       graph: {
         nodes: [],
         edges: [],
@@ -417,6 +419,7 @@ describe('MapCreator', () => {
       generated_edges: 300,
       generated_sites: 20,
       generated_parkings: 10,
+      generated_gas_stations: 2,
       graph: {
         nodes: [],
         edges: [],

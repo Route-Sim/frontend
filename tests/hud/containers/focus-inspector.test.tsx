@@ -34,6 +34,12 @@ vi.mock('@/hud/components/inspector/building-inspector', () => ({
   BuildingInspector: ({ id }: { id: string }) => (
     <div data-testid="building-inspector">Building: {id}</div>
   ),
+  SiteInspector: ({ id }: { id: string }) => (
+    <div data-testid="building-inspector">Building: {id}</div>
+  ),
+  ParkingInspector: ({ id }: { id: string }) => (
+    <div data-testid="building-inspector">Building: {id}</div>
+  ),
 }));
 
 vi.mock('@/hud/components/inspector/tree-inspector', () => ({

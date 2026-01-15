@@ -46,14 +46,14 @@ describe('Sim Reducers', () => {
     expect(draft.agents[id]).toBeUndefined();
   });
 
-  it('should handle truck updates via agent.updated', () => {
+  it('should handle truck updates via truck.updated', () => {
     const draft: SimDraft = createEmptySnapshot();
     const id = asTruckId('t1');
     // Create truck stub
     draft.trucks[id] = { id, currentSpeed: 0 } as any;
 
     registry.dispatch(draft, {
-      type: 'agent.updated',
+      type: 'truck.updated',
       id: asAgentId(id),
       patch: { currentSpeed: 50 },
     });

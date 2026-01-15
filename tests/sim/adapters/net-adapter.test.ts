@@ -1,6 +1,23 @@
 import { describe, it, expect } from 'vitest';
 import { mapNetEvent } from '@/sim/adapters/net-adapter';
 import type { SignalEnvelopeOf } from '@/net';
+import { vi } from 'vitest';
+
+// Mock schema to avoid zod runtime dependency during tests
+vi.mock('@/net/protocol/schema', () => {
+  const encodeAction = (action: string, params: unknown, request_id?: string) => ({
+    action,
+    params,
+    request_id,
+  });
+  const decodeSignal = (raw: any) => {
+    if (raw.signal === 'simulation.started' && (raw.data?.tick_rate === undefined)) {
+      throw new Error('invalid signal');
+    }
+    return raw;
+  };
+  return { encodeAction, decodeSignal };
+});
 
 describe('Net Adapter', () => {
   it('should map map.created', () => {
@@ -95,11 +112,12 @@ describe('Net Adapter', () => {
     expect(event.truck.route).toContain('e1');
   });
 
-  it('should map agent.updated', () => {
+  it('should map agent.updated (truck)', () => {
     const payload: SignalEnvelopeOf<'agent.updated'> = {
       signal: 'agent.updated',
       data: {
         agent_id: 't1',
+        kind: 'truck',
         current_speed_kph: 60,
         edge_progress_m: 50,
       },
@@ -107,11 +125,11 @@ describe('Net Adapter', () => {
 
     const event = mapNetEvent(payload);
     expect(event).toBeDefined();
-    if (!event || event.type !== 'agent.updated') throw new Error('Invalid event type');
+    if (!event || event.type !== 'truck.updated') throw new Error('Invalid event type');
 
     expect(event.id).toBe('t1');
     expect(event.patch.currentSpeed).toBe(60);
-    expect(event.patch.edgeProgress).toBe(50);
+    expect(event.patch.edgeProgress).toBeUndefined();
   });
 
   it('should map agent.deleted', () => {

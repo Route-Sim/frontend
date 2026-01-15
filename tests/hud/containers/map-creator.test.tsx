@@ -101,24 +101,23 @@ describe('MapCreator', () => {
     expect(screen.getByText('Dimensions')).toBeTruthy();
     expect(screen.getByText('Structure')).toBeTruthy();
     expect(screen.getByText('Densities')).toBeTruthy();
-    expect(screen.getByText('Connectivity')).toBeTruthy();
-    expect(screen.getByText('Road composition')).toBeTruthy();
-    expect(screen.getByText('Sites')).toBeTruthy();
-    expect(screen.getByText('Parkings')).toBeTruthy();
-    expect(screen.getByText('Activity Rates (packages/hour)')).toBeTruthy();
-    expect(screen.getByText('Randomness')).toBeTruthy();
+    expect(screen.queryAllByText(/Connectivity/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Road Composition/i)).toBeTruthy();
+    expect(screen.getByText(/Sites & Parkings/i)).toBeTruthy();
+    expect(screen.getByText(/Gas Stations/i)).toBeTruthy();
+    expect(screen.getByText(/Activity Rates/i)).toBeTruthy();
   });
 
   it('should update map width when input changes', () => {
     renderWithProvider();
-    const input = screen.getByLabelText(/Map Width/i) as HTMLInputElement;
+    const input = screen.getByLabelText(/Width \(m\)/i) as HTMLInputElement;
     fireEvent.change(input, { target: { value: '2000' } });
     expect(input.value).toBe('2000');
   });
 
   it('should update map height when input changes', () => {
     renderWithProvider();
-    const input = screen.getByLabelText(/Map Height/i) as HTMLInputElement;
+    const input = screen.getByLabelText(/Height \(m\)/i) as HTMLInputElement;
     fireEvent.change(input, { target: { value: '1500' } });
     expect(input.value).toBe('1500');
   });
@@ -136,7 +135,7 @@ describe('MapCreator', () => {
     expect(sliders.length).toBeGreaterThan(0);
 
     // Test intra_connectivity slider
-    const intraSlider = screen.getByLabelText('Intra connectivity');
+    const intraSlider = screen.getByLabelText(/Intra Connectivity/i);
     expect(intraSlider).toBeTruthy();
   });
 
@@ -168,21 +167,21 @@ describe('MapCreator', () => {
     renderWithProvider();
 
     // Modify a value
-    const input = screen.getByLabelText(/Map Width/i) as HTMLInputElement;
+    const input = screen.getByLabelText(/Width \(m\)/i) as HTMLInputElement;
     fireEvent.change(input, { target: { value: '2000' } });
     expect(input.value).toBe('2000');
 
     // Reset
-    const resetButton = screen.getByText('Reset Defaults');
+    const resetButton = screen.getByText('Reset');
     fireEvent.click(resetButton);
 
     // Should be back to default
     expect(input.value).toBe('1000');
   });
 
-  it('should call net.sendAction when Create Map is clicked', async () => {
+  it('should call net.sendAction when Generate Map is clicked', async () => {
     renderWithProvider();
-    const createButton = screen.getByText('Create Map');
+    const createButton = screen.getByText('Generate Map');
     fireEvent.click(createButton);
 
     await waitFor(() => {
@@ -193,13 +192,13 @@ describe('MapCreator', () => {
     });
   });
 
-  it('should disable Create Map button when simulation is playing', async () => {
+  it('should disable Generate Map button when simulation is playing', async () => {
     mockUsePlaybackState.mockReturnValue({ status: 'playing' });
 
     const { container } = renderWithProvider();
 
     await waitFor(() => {
-      const createButton = Array.from(container.querySelectorAll('button')).find(btn => btn.textContent?.includes('Create Map'));
+      const createButton = Array.from(container.querySelectorAll('button')).find(btn => btn.textContent?.includes('Generate Map'));
       expect(createButton).toBeTruthy();
       const isDisabled = createButton?.hasAttribute('disabled') || 
                          createButton?.getAttribute('aria-disabled') === 'true';
@@ -207,9 +206,9 @@ describe('MapCreator', () => {
     }, { timeout: 2000 });
   });
 
-  it('should enable Create Map button when simulation is idle', () => {
+  it('should enable Generate Map button when simulation is idle', () => {
     const { container } = renderWithProvider();
-    const createButton = Array.from(container.querySelectorAll('button')).find(btn => btn.textContent?.includes('Create Map'));
+    const createButton = Array.from(container.querySelectorAll('button')).find(btn => btn.textContent?.includes('Generate Map'));
     expect(createButton).toBeTruthy();
     expect(createButton?.hasAttribute('disabled')).toBe(false);
   });
@@ -261,9 +260,7 @@ describe('MapCreator', () => {
 
   it('should display empty state when no map is created', () => {
     renderWithProvider();
-    expect(
-      screen.getByText('Generated map will appear here after creation'),
-    ).toBeTruthy();
+    expect(screen.getByText('Generated map will appear here')).toBeTruthy();
   });
 
   it('should update parameters from map.created event', async () => {
@@ -307,12 +304,12 @@ describe('MapCreator', () => {
 
     await waitFor(() => {
       const widthInput = screen.getByLabelText(
-        /Map Width/i,
+        /Width \(m\)/i,
       ) as HTMLInputElement;
       expect(widthInput.value).toBe('2000');
 
       const heightInput = screen.getByLabelText(
-        /Map Height/i,
+        /Height \(m\)/i,
       ) as HTMLInputElement;
       expect(heightInput.value).toBe('1500');
     });
@@ -349,7 +346,7 @@ describe('MapCreator', () => {
     );
 
     renderWithProvider();
-    const createButton = screen.getByText('Create Map');
+    const createButton = screen.getByText('Generate Map');
     fireEvent.click(createButton);
 
     // Should not crash
@@ -367,7 +364,7 @@ describe('MapCreator', () => {
     (net.sendAction as ReturnType<typeof vi.fn>).mockReturnValue(promise);
 
     const { container } = renderWithProvider();
-    const createButton = Array.from(container.querySelectorAll('button')).find(btn => btn.textContent?.includes('Create Map'));
+    const createButton = Array.from(container.querySelectorAll('button')).find(btn => btn.textContent?.includes('Generate Map'));
     expect(createButton).toBeTruthy();
     
     if (createButton) {
@@ -431,7 +428,7 @@ describe('MapCreator', () => {
     await waitFor(() => {
       // Verify key parameters were updated
       const widthInput = screen.getByLabelText(
-        /Map Width/i,
+        /Width \(m\)/i,
       ) as HTMLInputElement;
       expect(widthInput.value).toBe('2000');
     });

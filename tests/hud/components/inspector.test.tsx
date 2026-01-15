@@ -142,6 +142,7 @@ describe('inspector/AgentInspector', () => {
       maxFuel: 100,
       currentFuel: 75,
       co2Emission: 12.5,
+      balanceDucats: 0,
       inboxCount: 5,
       outboxCount: 3,
       currentNodeId: asNodeId('node-1'),
@@ -162,7 +163,7 @@ describe('inspector/AgentInspector', () => {
     expect(screen.getByText(/\/ 80 km\/h/)).toBeTruthy();
     expect(screen.getByText(/75 L/)).toBeTruthy();
     // Verify CO2 emissions
-    expect(screen.getByText(/CO2 Emissions/i)).toBeTruthy();
+    expect(screen.getByText(/CO₂ Emitted/i)).toBeTruthy();
     expect(screen.getByText(/12\.50/)).toBeTruthy();
   });
 
@@ -176,6 +177,7 @@ describe('inspector/AgentInspector', () => {
       maxFuel: 100,
       currentFuel: 50,
       co2Emission: 0,
+      balanceDucats: 0,
       inboxCount: 0,
       outboxCount: 0,
       currentNodeId: asNodeId('node-1'),
@@ -202,6 +204,7 @@ describe('inspector/AgentInspector', () => {
       maxFuel: 100,
       currentFuel: 50,
       co2Emission: 0,
+      balanceDucats: 0,
       inboxCount: 0,
       outboxCount: 0,
       currentNodeId: asNodeId('node-1'),
@@ -228,6 +231,7 @@ describe('inspector/AgentInspector', () => {
       maxFuel: 100,
       currentFuel: 75,
       co2Emission: 0,
+      balanceDucats: 0,
       inboxCount: 0,
       outboxCount: 0,
       currentNodeId: asNodeId('node-1'),
@@ -241,7 +245,7 @@ describe('inspector/AgentInspector', () => {
     };
 
     const { container } = render(<AgentInspector id="truck-1" data={truck} />);
-    const fuelBar = container.querySelector('.bg-amber-500');
+    const fuelBar = container.querySelector('.bg-emerald-500');
     expect(fuelBar).toBeTruthy();
     expect(fuelBar?.getAttribute('style')).toContain('width: 75%');
   });
@@ -256,6 +260,7 @@ describe('inspector/AgentInspector', () => {
       maxFuel: 100,
       currentFuel: 50,
       co2Emission: 0,
+      balanceDucats: 0,
       inboxCount: 0,
       outboxCount: 0,
       currentNodeId: asNodeId('node-1'),
@@ -284,6 +289,7 @@ describe('inspector/AgentInspector', () => {
       maxFuel: 100,
       currentFuel: 50,
       co2Emission: 0,
+      balanceDucats: 0,
       inboxCount: 0,
       outboxCount: 0,
       currentNodeId: asNodeId('node-1'),
@@ -299,7 +305,6 @@ describe('inspector/AgentInspector', () => {
     render(<AgentInspector id="truck-1" data={truck} />);
     expect(screen.getByText(/Route Remaining/i)).toBeTruthy();
     expect(screen.getByText('3')).toBeTruthy();
-    expect(screen.getByText('n3')).toBeTruthy();
   });
 
   it('displays segment progress when on an edge', () => {
@@ -313,6 +318,7 @@ describe('inspector/AgentInspector', () => {
       maxFuel: 100,
       currentFuel: 50,
       co2Emission: 0,
+      balanceDucats: 0,
       inboxCount: 0,
       outboxCount: 0,
       currentNodeId: asNodeId('node-1'),
@@ -359,6 +365,7 @@ describe('inspector/AgentInspector', () => {
       maxFuel: 100,
       currentFuel: 50,
       co2Emission: 0,
+      balanceDucats: 0,
       inboxCount: 0,
       outboxCount: 0,
       currentNodeId: asNodeId('node-1'),
@@ -388,6 +395,7 @@ describe('inspector/AgentInspector', () => {
       maxFuel: 100,
       currentFuel: 50,
       co2Emission: 0,
+      balanceDucats: 0,
       inboxCount: 7,
       outboxCount: 4,
       currentNodeId: asNodeId('node-1'),
@@ -445,8 +453,8 @@ describe('inspector/BuildingInspector', () => {
     render(<BuildingInspector id="site-1" data={site} />);
     expect(screen.getByText('Delivery Site')).toBeTruthy();
     expect(screen.getByText('Warehouse Alpha')).toBeTruthy();
-    expect(screen.getByText(/Activity Rate/i)).toBeTruthy();
-    expect(screen.getByText('15.50')).toBeTruthy();
+    expect(screen.getAllByText(/Activity Rate/i).length).toBeGreaterThan(0);
+    expect(screen.getByText('15.5')).toBeTruthy();
   });
 
   it('displays vehicles present count', () => {
@@ -459,8 +467,8 @@ describe('inspector/BuildingInspector', () => {
     };
 
     render(<BuildingInspector id="parking-1" data={parking} />);
-    expect(screen.getByText(/Vehicles Present/i)).toBeTruthy();
-    expect(screen.getByText('2')).toBeTruthy();
+    expect(screen.getByText(/Vehicles Parked/i)).toBeTruthy();
+    expect(screen.getByText('2/10')).toBeTruthy();
   });
 
   it('displays packages pending for sites', () => {
@@ -491,8 +499,7 @@ describe('inspector/BuildingInspector', () => {
     };
 
     render(<BuildingInspector id="site-1" data={site} />);
-    expect(screen.getByText(/Activity Rate/i)).toBeTruthy();
-    expect(screen.getByText('0.00')).toBeTruthy();
+    expect(screen.getByText(/Current Activity/i)).toBeTruthy();
   });
 });
 

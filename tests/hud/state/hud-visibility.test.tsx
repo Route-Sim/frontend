@@ -19,7 +19,7 @@ describe('HudVisibilityContext', () => {
       wrapper: HudVisibilityProvider,
     });
 
-    expect(result.current.isVisible('play-controls')).toBe(true);
+    expect(result.current.isVisible('simulation-controls')).toBe(true);
     expect(result.current.isVisible('net-events')).toBe(false);
   });
 
@@ -79,11 +79,11 @@ describe('HudVisibilityContext', () => {
 
     expect(result.current.isVisible('net-events')).toBe(true);
     // Should fall back to default for others
-    expect(result.current.isVisible('play-controls')).toBe(true);
+    expect(result.current.isVisible('simulation-controls')).toBe(true);
   });
 
   it('should list known panels', () => {
-    expect(HUD_PANELS).toContain('play-controls');
+    expect(HUD_PANELS).toContain('simulation-controls');
     expect(HUD_PANELS).toContain('camera-help');
     expect(HUD_PANELS).toContain('net-events');
     expect(HUD_PANELS.length).toBe(3);
@@ -98,7 +98,7 @@ describe('HudVisibilityContext', () => {
 
     act(() => {
       // default is true; setting true again should keep same object
-      result.current.setVisible('play-controls', true);
+      result.current.setVisible('simulation-controls', true);
     });
 
     expect(result.current.state).toBe(initialState);
@@ -112,7 +112,7 @@ describe('HudVisibilityContext', () => {
     });
 
     // Should not throw and should use default visibility
-    expect(result.current.isVisible('play-controls')).toBe(true);
+    expect(result.current.isVisible('simulation-controls')).toBe(true);
     expect(result.current.isVisible('net-events')).toBe(false);
   });
 

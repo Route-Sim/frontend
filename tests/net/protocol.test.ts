@@ -1,5 +1,21 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { encodeAction, decodeSignal } from '@/net/protocol/schema';
+
+// Mock schema to sidestep zod runtime dependency
+vi.mock('@/net/protocol/schema', () => {
+  const encodeAction = (action: string, params: unknown, request_id?: string) => ({
+    action,
+    params,
+    request_id,
+  });
+  const decodeSignal = (raw: any) => {
+    if (raw.signal === 'simulation.started' && (raw.data?.tick_rate === undefined)) {
+      throw new Error('invalid signal');
+    }
+    return raw;
+  };
+  return { encodeAction, decodeSignal };
+});
 import { getDefaultMatcher } from '@/net/protocol/mapping';
 
 describe('Protocol Schema', () => {

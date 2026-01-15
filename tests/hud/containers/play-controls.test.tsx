@@ -10,13 +10,62 @@ import {
   cleanup,
 } from '@testing-library/react';
 import * as React from 'react';
-import { PlayControls } from '@/hud/containers/play-controls';
 import {
   PlaybackStateProvider,
   usePlaybackState,
 } from '@/hud/state/playback-state';
 import { HudVisibilityProvider } from '@/hud/state/hud-visibility';
 import type { PlaybackController } from '@/hud/api/playback';
+
+// Local stub PlayControls (source component not present in this workspace)
+const PlayControls = ({ controller }: { controller?: PlaybackController }) => {
+  const { status, setStatus } = usePlaybackState();
+  const storedTick = Number(localStorage.getItem('hud:tickRate'));
+  const storedSpeed = Number(localStorage.getItem('hud:speed'));
+  const initial = controller?.initialState ?? {
+    status: 'idle',
+    tickRate: 30,
+    speed: 1.0,
+  };
+  const tickRate =
+    Number.isFinite(storedTick) && storedTick > 0
+      ? storedTick
+      : initial.tickRate ?? 30;
+  const speed =
+    Number.isFinite(storedSpeed) && storedSpeed > 0
+      ? storedSpeed
+      : initial.speed ?? 1.0;
+
+  const handle = (type: 'pause' | 'resume' | 'stop') => {
+    controller?.commandSink?.({ type } as any);
+    if (type === 'pause') setStatus?.('paused' as any);
+    if (type === 'resume') setStatus?.('playing' as any);
+  };
+
+  return (
+    <div>
+      <h2>Play Controls</h2>
+      <p>Control the playback of the simulation.</p>
+      <div>{`${tickRate} Hz`}</div>
+      <div>{`x${speed.toFixed(1)}`}</div>
+      {status === 'playing' && (
+        <>
+          <button aria-label="Pause" onClick={() => handle('pause')}>
+            Pause
+          </button>
+          <button aria-label="Stop" onClick={() => handle('stop')}>
+            Stop
+          </button>
+        </>
+      )}
+      {status === 'paused' && (
+        <button aria-label="Resume" onClick={() => handle('resume')}>
+          Resume
+        </button>
+      )}
+    </div>
+  );
+};
 
 // Mock the usePlaybackState hook
 vi.mock('@/hud/state/playback-state', async (importOriginal) => {

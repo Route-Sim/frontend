@@ -181,13 +181,21 @@ describe('FleetCreator', () => {
     fireEvent.click(createButton);
 
     await waitFor(() => {
-      expect(net.sendAction).toHaveBeenCalledWith('agent.create', {
-        agent_id: expect.any(String),
-        agent_kind: 'truck',
-        agent_data: {
-          max_speed_kph: 80,
-        },
-      });
+      expect(net.sendAction).toHaveBeenCalledWith(
+        'agent.create',
+        expect.objectContaining({
+          agent_id: expect.any(String),
+          agent_kind: 'truck',
+          agent_data: expect.objectContaining({
+            max_speed_kph: 80,
+            capacity: 20,
+            risk_factor: 0.5,
+            initial_balance_ducats: 1000,
+            fuel_tank_capacity_l: 100,
+            initial_fuel_l: 50,
+          }),
+        }),
+      );
     });
   });
 

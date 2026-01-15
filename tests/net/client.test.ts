@@ -6,6 +6,17 @@ import type {
   ReadyState,
 } from '@/net/transport/browser-websocket';
 
+// Mock schema to avoid zod runtime dependency
+vi.mock('@/net/protocol/schema', () => {
+  const encodeAction = (action: string, params: unknown, request_id?: string) => ({
+    action,
+    params,
+    request_id,
+  });
+  const decodeSignal = (raw: any) => raw;
+  return { encodeAction, decodeSignal };
+});
+
 class MockTransport implements IWebSocketTransport {
   readyState: ReadyState = 'idle';
   sent: string[] = [];

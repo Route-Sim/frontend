@@ -47,7 +47,7 @@ describe('HudMenu', () => {
     fireEvent.pointerDown(trigger); // DropdownMenu uses pointer events
 
     // Check for panel labels
-    expect(await screen.findByText('Play Controls')).toBeInTheDocument();
+    expect(await screen.findByText(/Simulation Controls/i)).toBeInTheDocument();
     expect(await screen.findByText('Net Events')).toBeInTheDocument();
 
     // Click an item

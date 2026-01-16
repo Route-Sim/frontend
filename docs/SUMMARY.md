@@ -89,3 +89,6 @@
       - [playback-state](modules/hud/state/playback-state.md)
       - [focus-state](modules/hud/state/focus-state.md)
       - [sim-context](modules/hud/state/sim-context.md)
+
+  - tests
+    - [setup](modules/tests/setup.md)

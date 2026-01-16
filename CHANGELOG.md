@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Route-Sim/frontend/compare/v1.0.0...v1.1.0) (2026-01-16)
+
+
+### Features
+
+* **tests:** add Vitest setup documentation and implement MemoryStorage for test environment ([48691f5](https://github.com/Route-Sim/frontend/commit/48691f589c0e23dedefa31650aef499417f0175b))
+
 ## 1.0.0 (2026-01-04)
 
 
